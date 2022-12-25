@@ -1,6 +1,7 @@
 package com.berdimyradov.googleauthapp.component
 
 import android.icu.text.IDNA.Info
+import android.os.Message
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.berdimyradov.googleauthapp.domain.model.MessageBarState
 import com.berdimyradov.googleauthapp.ui.theme.ErrorRed
@@ -63,32 +65,57 @@ fun MessageBar(
             shrinkTowards = Alignment.Top
         )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(if (messageBarState.error != null) ErrorRed else InfoGreen)
-                .padding(horizontal = 20.dp)
-                .height(40.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector =
-                if (messageBarState.error != null) Icons.Default.Warning
-                else Icons.Default.Check,
-                contentDescription = "Message Bar Icon",
-                tint = Color.White
-            )
-            Divider(modifier = Modifier.width(12.dp), color = Color.Transparent)
-            Text(
-                text =
-                if (messageBarState.error != null) errorMessage
-                else messageBarState.message.toString(),
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.button.fontSize,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
-        }
+        Message(messageBarState = messageBarState, errorMessage = errorMessage)
     }
+}
+
+@Composable
+fun Message(
+    messageBarState: MessageBarState,
+    errorMessage: String = ""
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(if (messageBarState.error != null) ErrorRed else InfoGreen)
+            .padding(horizontal = 20.dp)
+            .height(40.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector =
+            if (messageBarState.error != null) Icons.Default.Warning
+            else Icons.Default.Check,
+            contentDescription = "Message Bar Icon",
+            tint = Color.White
+        )
+        Divider(modifier = Modifier.width(12.dp), color = Color.Transparent)
+        Text(
+            text =
+            if (messageBarState.error != null) errorMessage
+            else messageBarState.message.toString(),
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = MaterialTheme.typography.button.fontSize,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+    }
+}
+
+@Preview
+@Composable
+fun MessageBarPreview() {
+    Message(
+        messageBarState = MessageBarState(message = "Successfully Updated")
+    )
+}
+
+@Preview
+@Composable
+fun MessageBarErrorPreview() {
+    Message(
+        messageBarState = MessageBarState(error = SocketTimeoutException()),
+        errorMessage = "Internet Unavailable"
+    )
 }
